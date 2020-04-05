@@ -3,7 +3,7 @@
 import os
 from pathlib import Path
 
-from qmk.path import keymap, is_keyboard
+from qmk.path import is_keyboard
 from qmk.makefile import get_rules_mk
 
 # The `keymap.c` template to use when a keyboard doesn't have its own
