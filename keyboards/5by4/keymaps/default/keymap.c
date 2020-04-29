@@ -71,15 +71,12 @@ void matrix_scan_user(void) {}
 void led_set_user(uint8_t usb_led) {}
 
 static void current_layer(void) {
-    // Host Keyboard Layer Status
-    oled_write_P(PSTR("Layer: "), false);
-
     switch (get_highest_layer(layer_state)) {
         case _BASE:
-            oled_write_ln_P(PSTR("Numpad"), false);
+            oled_write_ln_P(PSTR("             Numpad"), false);
             break;
         default:
-            oled_write_ln_P(PSTR("Undefined"), false);
+            oled_write_ln_P(PSTR("                N/A"), false);
     }
 }
 
@@ -88,7 +85,7 @@ static void is_numlock_active(led_t* host_keyboard_led_state) {
         0x9d, 0x9e, 0
     };
 
-    oled_write_ln_P(num_lock_icon, host_keyboard_led_state->num_lock);
+    oled_write_P(num_lock_icon, host_keyboard_led_state->num_lock);
 }
 
 void oled_task_user(void) {
