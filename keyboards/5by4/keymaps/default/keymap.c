@@ -21,10 +21,10 @@ enum layer_names {
 };
 
 // Defines the keycodes used by our macros in process_record_user
-enum custom_keycodes {
+/*enum custom_keycodes {
     QMKBEST = SAFE_RANGE,
     QMKURL
-};
+};*/
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     /* Base */
@@ -51,8 +51,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-
-    return true;
+    switch (keycode) {
+        case KC_KP_0:
+            if (record->event.pressed) {
+                oled_write_ln_P(PSTR("Pressing 0"), false);
+            } else {
+                oled_write_ln_P(PSTR("Released 0"), false);
+            }
+            return false; // Skip all further processing of this key
+        default:
+            return true; // Process all other keycodes normally
+    }
 }
 
 void matrix_init_user(void) {}
@@ -61,20 +70,30 @@ void matrix_scan_user(void) {}
 
 void led_set_user(uint8_t usb_led) {}
 
-#ifdef OLED_DRIVER_ENABLE
+static void current_layer(void) {
+    // Host Keyboard Layer Status
+    oled_write_P(PSTR("Layer: "), false);
 
-static void render_logo(void) {
-  static const char PROGMEM qmk_logo[] = {
-    0x80,0x81,0x82,0x83,0x84,0x85,0x86,0x87,0x88,0x89,0x8a,0x8b,0x8c,0x8d,0x8e,0x8f,0x90,0x91,0x92,0x93,0x94,
-    0xa0,0xa1,0xa2,0xa3,0xa4,0xa5,0xa6,0xa7,0xa8,0xa9,0xaa,0xab,0xac,0xad,0xae,0xaf,0xb0,0xb1,0xb2,0xb3,0xb4,
-    0xc0,0xc1,0xc2,0xc3,0xc4,0xc5,0xc6,0xc7,0xc8,0xc9,0xca,0xcb,0xcc,0xcd,0xce,0xcf,0xd0,0xd1,0xd2,0xd3,0xd4,0};
+    switch (get_highest_layer(layer_state)) {
+        case _BASE:
+            oled_write_ln_P(PSTR("Numpad"), false);
+            break;
+        default:
+            oled_write_ln_P(PSTR("Undefined"), false);
+    }
+}
 
-  oled_write_P(qmk_logo, false);
+static void is_numlock_active(led_t* host_keyboard_led_state) {
+    static const char PROGMEM num_lock_icon[] = {
+        0x9d, 0x9e, 0
+    };
+
+    oled_write_ln_P(num_lock_icon, host_keyboard_led_state->num_lock);
 }
 
 void oled_task_user(void) {
-  oled_write_P(PSTR("NUMLOCK\n"), host_keyboard_led_state().num_lock);
+    led_t led_usb_state = host_keyboard_led_state();
 
-  render_logo();
+    is_numlock_active(&led_usb_state);
+    current_layer();
 }
-#endif
