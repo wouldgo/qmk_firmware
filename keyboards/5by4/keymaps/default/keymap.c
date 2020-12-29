@@ -52,13 +52,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
-        case KC_KP_0:
+        /*case KC_KP_0:
             if (record->event.pressed) {
                 oled_write_ln_P(PSTR("Pressing 0"), false);
             } else {
                 oled_write_ln_P(PSTR("Released 0"), false);
             }
-            return false; // Skip all further processing of this key
+            return false; // Skip all further processing of this key*/
         default:
             return true; // Process all other keycodes normally
     }
